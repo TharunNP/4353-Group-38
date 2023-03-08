@@ -1,4 +1,6 @@
-@charset "UTF-8";
+.h6{
+ background-color: #0c4128;
+}
 /*!
 * Start Bootstrap - Freelancer v7.0.6 (https://startbootstrap.com/theme/freelancer)
 * Copyright 2013-2022 Start Bootstrap
@@ -11515,7 +11517,6 @@ html {
 .rotated2 {
   transform: rotate(270deg);
 }
-<style>
 table {
   font-family: arial, sans-serif;
   border-collapse: collapse;
@@ -11531,4 +11532,3 @@ td, th {
 tr:nth-child(even) {
   background-color: #1abc9c;
 }
-</style>
