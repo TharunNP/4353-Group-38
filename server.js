@@ -9,8 +9,22 @@ const app = express()
 app.use(express.static(__dirname + '/public/'));
 // port we are using 
 const port = 3000
+// global variables
+let logged_in = false; // tracks if user is logged in or not 
+let curr_user = { // get from data base and store in here for easy access
+    username:'',
+    add: '',
+    add2: '',
+    zip: '',
+    city:'',
+    state: '',
+    user_history:[],
+  };
 
-// dummy variables (fake data base)
+
+
+
+// dummy database (fake data base)
 var db_username = "john.doe";
 var db_add1 = "3100 university dr";
 var db_add2 = "apt 1234";
