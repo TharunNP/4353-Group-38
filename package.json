@@ -18,6 +18,9 @@
   },
   "homepage": "https://github.com/TharunNP/4353-Group-38#readme",
   "dependencies": {
-    "express": "^4.18.2"
+    "alert": "^5.1.4",
+    "body-parser": "^1.20.2",
+    "express": "^4.18.2",
+    "popups": "^1.1.3"
   }
 }

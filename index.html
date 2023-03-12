@@ -78,42 +78,45 @@
 
                             <div class="card"> 
                             <div class="form p-5">
+                            <form action="" id="loginForm">
                                 <h2 class="text-secondary">LOGIN</h2>
                               <input type="text" name="" class="form-control mb-3" placeholder="Username">
           
                               <input type="text" name="" class="form-control mb-3" placeholder="Password">
                               <button class="btn btn-dark btn-block">Login</button>
-          
+                            </form>
                             </div>
                             </div>
                          <div class="vr m-5"></div>
                          <div class="card">
                                 <div class="form p-3">
+                                <form action="/reg" method="post" id="RegForm">
                                     <h2 class="text-secondary">Register</h2>
-                                  <input type="text" name="" class="form-control mb-3" placeholder="Username">
+                                  <input type="text" id="username" name="username" class="form-control mb-3" placeholder="Username" required>
                                   <div class="row">
                                     <div class="col">
-                                        <input type="text" name="" class="form-control mb-3" placeholder="Address Line 1">
+                                        <input type="text" id="add1" name="add1" class="form-control mb-3" placeholder="Address Line 1" >
                                     </div>
                                     <div class="col">
-                                        <input type="text" name="" class="form-control mb-3" placeholder="Address Line 2">
+                                        <input type="text" id="add2" name="add2" class="form-control mb-3" placeholder="Address Line 2">
                                     </div>
                                   </div>
                                   
                                   <div class="row">
                                     <div class="col">
-                                        <input type="text" name="" class="form-control mb-3" placeholder="Zip">
+                                        <input type="text" id="zip" name="zip" class="form-control mb-3" placeholder="Zip" >
                                     </div>
                                     <div class="col">
-                                        <input type="text" name="" class="form-control mb-3" placeholder="City">
+                                        <input type="text" id="city" name="city" class="form-control mb-3" placeholder="City" >
                                     </div>
                                   </div>
                                   
                                   
-                                  <input type="text" name="" class="form-control mb-3" placeholder="State">
-                                  <input type="text" name="" class="form-control mb-3" placeholder="Password">
-                                  <button class="btn btn-dark btn-block">Register</button>
+                                  <input type="text" id="state" name="state" class="form-control mb-3" placeholder="State" >
+                                  <input type="text" id="pass" name="pass" class="form-control mb-3" placeholder="Password"  >
+                                  <button type = "submit" class="btn btn-dark btn-block">Register</button>
                                 </div>
+                            </form>
                              </div>
                   </div>
             </div>
