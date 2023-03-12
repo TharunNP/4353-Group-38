@@ -47,7 +47,39 @@ app.get('/user', (req, res) => {
   })
 // END OF REMOVE 
 
-
+// login route
+app.post('/login', (req, res) => {
+    const username = req.body.username;
+    const password = req.body.password;
+  
+    if (username === db_username && password === db_password) {
+        // set current user and logged in flag
+        curr_user.username = username;
+        curr_user.add = db_add1;
+        curr_user.add2 = db_add2;
+        curr_user.city = db_city;
+        curr_user.state = db_state;
+        curr_user.zip = db_zip;
+        curr_user.user_history = db_quote_arr;
+        logged_in = true;
+  
+        // redirect to second page
+        res.redirect('/user');
+    } else {
+        // login failed
+        res.send('Login failed. Please check your credentials and try again.');
+    }
+  });
+  
+  // user route (only accessible when logged in)
+  app.get('/user', (req, res) => {
+    if (logged_in) {
+        res.sendFile(__dirname + '/index2.html');
+    } else {
+        res.redirect('/');
+    }
+  });
+  
 // console log that you started the server
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
