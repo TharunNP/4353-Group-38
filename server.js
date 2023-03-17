@@ -27,7 +27,27 @@ let curr_user = { // get from data base and store in here for easy access
     zip: '',
     city:'',
     state: '',
-    user_history:[],
+    user_history:[{ 
+        gallons:0,
+        add:"nothing st",
+        date: "0/3/32",
+        s_price: 43,
+        total: 149
+    },
+    { 
+        gallons:1,
+        add:"nothing st",
+        date: "0/3/32",
+        s_price: 43,
+        total: 149
+    },
+    { 
+        gallons:2,
+        add:"nothing st",
+        date: "0/3/32",
+        s_price: 43,
+        total: 149
+    }]
   };
 
 
@@ -58,7 +78,7 @@ app.post('/reg', (req, res) => {
     const city = req.body.city;
     const state = req.body.state;
     const password = req.body.pass;
-    console.log(req.body);
+    
     // check if username exists in database
         // todo
     //create new user and log in 
@@ -75,7 +95,6 @@ app.post('/reg', (req, res) => {
         curr_user.city = city;
         curr_user.state = state;
         curr_user.zip = zip;
-        curr_user.user_history = 'empty for now';
         logged_in = true;
         // add to database later 
 
@@ -101,10 +120,14 @@ app.get('/user', (req, res) => {
 MyObject = {
     // display second page with edited information 
     load_second_page: function(res) { 
+        // get values from database for history
+        let history = curr_user.user_history;
         app.set('view engine', 'ejs');
-        console.log(curr_user.username);
         res.render('index2', {
-            curr_user: curr_user
+            // for display user info
+            curr_user: curr_user.user_history,
+            // for diaplay quote history 
+            history: history
         })
         
     },

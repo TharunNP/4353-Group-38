@@ -210,32 +210,44 @@
                     <!-- Footer Social Icons-->
                     <div class="col-lg-4 mb-5 mb-lg-0 d-flex align-items-center flex-column">
                         <!--adding table-->
-                      <table>
-  <tr>
-    <th>Title</th>
-    <th>Information</th>    
-  </tr>
-  <tr>
-    <td>Name</td>
-    <td>John doe</td>
-  </tr>
-  <tr>
-    <td>Address</td>
-    <td>zxy lane</td>
-  </tr>
-  <tr>
-    <td>city</td>
-    <td>houston</td>
-  </tr>
-    <tr>
-    <td>state</td>
-      <td>Texyass</td>
-  </tr>
-    <tr>
-    <td>Zipcode</td>
-      <td>77200X</td>
-  </tr>
-</table>
+            <table>
+                <tr>
+                    <th>Gallons Requested</th><th>Delivery Address</th><th>Delivery Date</th><th>Suggested Price / gallon</th><th>Total Amount Due</th>
+                 </tr>
+                 <% for (var i = 0; i < history.length; i++) { %>
+                    <tr>
+                      <td><%= history[i].gallons %></td>
+                      <td><%= history[i].add %></td>
+                      <td><%= history[i].date %></td>
+                      <td><%= history[i].s_price %></td>
+                      <td><%= history[i].total %></td>
+                    </tr>    
+                   <% } %>
+                <!-- <tr>
+                    <th>Title</th>
+                    <th>Information</th>    
+                </tr>
+                <tr>
+                    <td>Name</td>
+                    <td>John doe</td>
+                </tr>
+                <tr>
+                    <td>Address</td>
+                    <td>zxy lane</td>
+                </tr>
+                <tr>
+                    <td>city</td>
+                    <td>houston</td>
+                </tr>
+                    <tr>
+                    <td>state</td>
+                    <td>Texyass</td>
+                </tr>
+                    <tr>
+                    <td>Zipcode</td>
+                    <td>77200X</td>
+                </tr> -->
+            </table>
                     </div>                    
                 </div>
             </div>
