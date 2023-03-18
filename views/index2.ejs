@@ -62,8 +62,12 @@
     <th>Information</th>    
   </tr>
   <tr>
-    <td>Name</p></td>
+    <td>User_Name</p></td>
     <td><%= curr_user.username%></td>
+  </tr>
+  <tr>
+    <td>Name</p></td>
+    <td><%= curr_user.fname%></td>
   </tr>
   <tr>
     <td>Address</td>
@@ -104,7 +108,7 @@
                 <!-- Log/Reg Section Content-->
                 <div class = "container">
 		<h1>Client Profile</h1>
-		<form action="#" method="post">
+		<form action="/profile" method="post">
 			<div class="form-group">
 				<label for="fullname">Full Name</label>
 				<input type="text" class="form-control" id="fullname" name="fullname" placeholder="Enter full name" required maxlength="50">
