@@ -10,14 +10,14 @@ let alert = require('alert');
 var app = express()
 
 // parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.urlencoded({ extended: false }));
 
 // parse application/json
-app.use(bodyParser.json())
+app.use(bodyParser.json());
 // so that the css file is sent to the front end aswell
 app.use(express.static(__dirname + '/public/'));
 // port we are using 
-const port = 3000
+const port = 3000;
 // global variables
 let logged_in = false; // tracks if user is logged in or not 
 let curr_user = { // get from data base and store in here for easy access
@@ -63,19 +63,23 @@ var db_city= "houston";
 var db_state = "Texas";
 var db_zip = 75078;
 var db_quote_arr= [512,432,234,654,677];
-var db_password = "1234"
+var db_password = "1234";
 var db_info_completed = false;
 // end of fake database 
 
 // '/' is the default route when someone opens the website on local port 3000
 app.get('/', (req, res) => {
   res.sendFile(__dirname+ "/index.html");
-})
+});
+
 // registration form 
 app.post('/reg', (req, res) => {
     
 	const username = req.body.username;
     const password = req.body.pass;
+
+  console.log(username);
+  console.log(password);
     
     // check if username exists in database
         // todo
@@ -94,7 +98,9 @@ app.post('/reg', (req, res) => {
         res.redirect('/profile');
     }
     
-})
+});
+
+
 // profile management page 
 app.get('/profile', (req, res) => {
     // check if user info is complete from database
@@ -106,7 +112,7 @@ app.get('/profile', (req, res) => {
         
     }
     
-  })
+  });
 
 // profile management form submit 
 app.post('/profile', (req, res) => {
@@ -125,6 +131,27 @@ app.post('/profile', (req, res) => {
         curr_user.state = state;
         curr_user.zip = zip;
         curr_user.info_completed = true;
+        curr_user.user_history = [{ 
+            gallons:0,
+            add:"nothing st",
+            date: "0/3/32",
+            s_price: 43,
+            total: 149
+        },
+        { 
+            gallons:1,
+            add:"nothing st",
+            date: "0/3/32",
+            s_price: 43,
+            total: 149
+        },
+        { 
+            gallons:2,
+            add:"nothing st",
+            date: "0/3/32",
+            s_price: 43,
+            total: 149
+        }];
     console.log(curr_user);
     // save data into data base later
     //  db_username = "john.doe";
@@ -136,8 +163,9 @@ app.post('/profile', (req, res) => {
    
     logged_in = true;
     res.redirect('/user');
-})
-  
+});
+
+
 
 
 // REMOVE THIS WHEN IMPLEMENTING SECOND PAGE| THIS IS ONLY FOR TESTING
@@ -151,25 +179,159 @@ app.get('/user', (req, res) => {
   });
 // END OF REMOVE 
 
+
 // methods 
 MyObject = {
     // display second page with edited information 
     load_second_page: function(res) { 
         // get values from database for history
-        let history = curr_user.user_history;
         app.set('view engine', 'ejs');
         res.render('index2', {
             // for display user info
             curr_user: curr_user,
             // for diaplay quote history 
-            history: history
+            history: curr_user.user_history
         })
         
     },
     
     // other functions...
 }
+
+const statesList = [
+'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
+'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD',
+'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ',
+'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC',
+'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'
+];
+
+// Client form fields validation
+
+const validateClientForm = (req, res, next) => {
+const { fullName, address1, city, state, zipcode } = req.body;
+let { address2 } = req.body;
+
+// Check required fields
+if (!fullName || !address1 || !city || !state || !zipcode) {
+return res.status(400).json({ msg: 'Please fill in all required fields' });
+}
+
+// Check field lengths
+if (fullName.length > 50) {
+return res.status(400).json({ msg: 'Full name must be less than 50 characters' });
+}
+if (address1.length > 100) {
+return res.status(400).json({ msg: 'Address 1 must be less than 100 characters' });
+}
+if (address2 && address2.length > 100) {
+return res.status(400).json({ msg: 'Address 2 must be less than 100 characters' });
+}
+if (city.length > 100) {
+return res.status(400).json({ msg: 'City must be less than 100 characters' });
+}
+if (!state.match(/^[a-zA-Z]{2}$/)) {
+return res.status(400).json({ msg: 'State must be a 2 character code' });
+}
+if (!zipcode.match(/^\d{5}(-\d{4})?$/)) {
+return res.status(400).json({ msg: 'Zipcode must be a 5 or 9 digit code' });
+}
+
+// Pass validation
+next();
+};
+
+// Client form route
+app.post('/client-form', validateClientForm, (req, res) => {
+
+// Handle form submission
+const { fullName, address1, address2, city, state, zipcode } = req.body;
+  
+// Store client information in database or do further processing
+res.send('Form submitted successfully!');
+
+});
+
+//login route
+app.post('/login', (req, res) => {
+  const username = req.body.usernameInput;
+  const password = req.body.passwordInput;
+
+
+  //check if username exists in databasem if true, check if pw matches
+  //if both conditions are met, set curr_user and logged_in to true and redirect to second page
+  if(username === db_username && password === db_password){
+    curr_user.username = username;
+    logged_in = true;
+    
+    res.redirect('/user');
+  } else {
+    console.log('Invalid login credentials.');
+    res.send('Invalid login credentials.');
+  }
+});
+
+
+
+/*
+app.get('/client/:id',(req, res) => {
+  const clientId = req.params.id;
+  //link to database to look up client info
+
+  const tempClientData = {
+    name: db_username,
+    address: db_add1,
+    address2: db_add2,
+    city: db_city,
+    state: db_state,
+    zipcode: db_zip
+  };
+  res.json(tempClientData);
+});
+*/
+
+app.post('/logout', (req, res) => {
+// clear the user session data and set the logged_in flag to false
+curr_user = {};
+logged_in = false;
+// redirect the user to the home page
+res.redirect('/');
+});
+
+
+//fuel quote
+app.post('/fuelQuote', (req,res) =>{
+  const { gallonsRequested, deliveryDate } = req.body;
+  
+// Validate gallonsRequested and deliveryDate
+if (!gallonsRequested || isNaN(gallonsRequested)) {
+return res.status(400).send('Gallons Requested must be a number');
+}
+if (!deliveryDate || !/^\d{4}-\d{2}-\d{2}$/.test(deliveryDate)) {
+return res.status(400).send('Delivery Date must be in YYYY-MM-DD format');
+}
+
+// Get delivery address from client profile (not implemented)
+const deliveryAddress = '123 Main St, Anytown USA';
+
+// Get suggested price from pricing module (not implemented)
+const suggestedPrice = 2.50;
+
+// Calculate total amount due
+const totalAmountDue = gallonsRequested * suggestedPrice;
+
+// Return fuel quote data
+res.send({
+gallonsRequested,
+deliveryAddress,
+deliveryDate,
+suggestedPrice,
+totalAmountDue,
+});
+});
+
+
 // console log that you started the server
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
-})
+});
