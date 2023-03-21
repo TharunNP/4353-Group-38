@@ -131,6 +131,27 @@ app.post('/profile', (req, res) => {
         curr_user.state = state;
         curr_user.zip = zip;
         curr_user.info_completed = true;
+        curr_user.user_history = [{ 
+            gallons:0,
+            add:"nothing st",
+            date: "0/3/32",
+            s_price: 43,
+            total: 149
+        },
+        { 
+            gallons:1,
+            add:"nothing st",
+            date: "0/3/32",
+            s_price: 43,
+            total: 149
+        },
+        { 
+            gallons:2,
+            add:"nothing st",
+            date: "0/3/32",
+            s_price: 43,
+            total: 149
+        }];
     console.log(curr_user);
     // save data into data base later
     //  db_username = "john.doe";
@@ -164,13 +185,12 @@ MyObject = {
     // display second page with edited information 
     load_second_page: function(res) { 
         // get values from database for history
-        let history = curr_user.user_history;
         app.set('view engine', 'ejs');
         res.render('index2', {
             // for display user info
             curr_user: curr_user,
             // for diaplay quote history 
-            history: history
+            history: curr_user.user_history
         })
         
     },
@@ -244,22 +264,14 @@ app.post('/login', (req, res) => {
     curr_user.username = username;
     logged_in = true;
     
-    res.redirect('/second_page');
+    res.redirect('/user');
   } else {
     console.log('Invalid login credentials.');
     res.send('Invalid login credentials.');
   }
 });
 
-app.get('/second_page', (req,res) => {
-  if(logged_in){
-    console.log('Login success');
-    res.sendFile(__dirname+ "/index2.html");
-  } else {
-    res.redirect('/');
-    console.log('Login Failed');
-  }
-});
+
 
 /*
 app.get('/client/:id',(req, res) => {
