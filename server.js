@@ -165,7 +165,55 @@ app.post('/profile', (req, res) => {
     res.redirect('/user');
 });
 
+let tclientProfile = {
+  deliveryAddress: 'Address placeholder',
+  gallonsRequested: 0,
+  deliveryDate: '',
+  suggestedPrice: 0,
+  totalAmountDue: 0
+};
 
+//fuel quote
+app.post('/fuelQuote', (req, res) => {
+  console.log('app.post route called'); // debugging statement
+  //const { gallonsRequested, deliveryDate } = req.body;
+  //let gallonsRequested = req.body.gallonsRequested;
+  //let deliveryDate = req.body.deliveryDate;
+
+  const gallonsRequested = 10;
+  const deliveryDate = '2023-01-01';
+  // Validate gallonsRequested and deliveryDate
+  if (!gallonsRequested || isNaN(gallonsRequested)) {
+    return res.status(400).send('Gallons Requested must be a number');
+  }
+  
+  if (!deliveryDate || !/^\d{4}-\d{2}-\d{2}$/.test(deliveryDate)) {
+    return res.status(400).send('Delivery Date must be in YYYY-MM-DD format');
+  }
+  
+  
+  const deliveryAddress = 'Address placeholder';
+  const suggestedPrice = 2.50;
+  const totalAmountDue = gallonsRequested * suggestedPrice;
+
+    const dateParts = deliveryDate.split('-');
+  const year = parseInt(dateParts[0]);
+  const month = parseInt(dateParts[1]) - 1; // JS months are zero-based
+  const day = parseInt(dateParts[2]);
+  const dateObj = new Date(year, month, day);
+  
+  tclientProfile = {
+    gallonsRequested,
+    deliveryAddress,
+    deliveryDate,
+    suggestedPrice,
+    totalAmountDue
+  };
+
+  console.log(tclientProfile); // debugging statement
+
+  res.redirect('/user');
+});
 
 
 // REMOVE THIS WHEN IMPLEMENTING SECOND PAGE| THIS IS ONLY FOR TESTING
@@ -190,7 +238,8 @@ MyObject = {
             // for display user info
             curr_user: curr_user,
             // for diaplay quote history 
-            history: curr_user.user_history
+            history: curr_user.user_history,
+            tclientProfile: tclientProfile
         })
         
     },
@@ -299,36 +348,7 @@ res.redirect('/');
 });
 
 
-//fuel quote
-app.post('/fuelQuote', (req,res) =>{
-  const { gallonsRequested, deliveryDate } = req.body;
-  
-// Validate gallonsRequested and deliveryDate
-if (!gallonsRequested || isNaN(gallonsRequested)) {
-return res.status(400).send('Gallons Requested must be a number');
-}
-if (!deliveryDate || !/^\d{4}-\d{2}-\d{2}$/.test(deliveryDate)) {
-return res.status(400).send('Delivery Date must be in YYYY-MM-DD format');
-}
 
-// Get delivery address from client profile (not implemented)
-const deliveryAddress = '123 Main St, Anytown USA';
-
-// Get suggested price from pricing module (not implemented)
-const suggestedPrice = 2.50;
-
-// Calculate total amount due
-const totalAmountDue = gallonsRequested * suggestedPrice;
-
-// Return fuel quote data
-res.send({
-gallonsRequested,
-deliveryAddress,
-deliveryDate,
-suggestedPrice,
-totalAmountDue,
-});
-});
 
 
 // console log that you started the server
