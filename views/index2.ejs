@@ -222,24 +222,47 @@
     <title>Fuel Quote Form</title>
   </head>
   <body>
-    <h1>Fuel Quote Form</h1>
-    <form action="/fuelQuote" method="POST">
-      <label for="gallonsRequested">Gallons Requested:</label>
-      <input type="number" id="gallonsRequested" name="gallonsRequested" value="<%= tclientProfile.gallonsRequested %>" required>
-      
-      <label for="deliveryAddress">Delivery Address:</label>
-      <input type="text" id="deliveryAddress" name="deliveryAddress" value="<%= tclientProfile.deliveryAddress %>" readonly>
-      <label for="deliveryDate">Delivery Date:</label>
-      <input type="date" id="deliveryDate" name="deliveryDate" value="<%= tclientProfile.deliveryDate %>" required>
-      
-      <label for="suggestedPrice">Suggested Price / gallon:</label>
-      <input type="number" id="suggestedPrice" name="suggestedPrice" value="<%= tclientProfile.suggestedPrice %>" readonly>
-      
-      <label for="totalAmountDue">Total Amount Due:</label>
-      <input type="number" id="totalAmountDue" name="totalAmountDue" value="<%= tclientProfile.totalAmountDue %>" readonly>
-      
-      <button type="submit">Submit</button>
-    </form>
+    <section class="page-section portfolio" id="portfolio">
+        <div class="container d-flex align-items-center flex-column">
+            <!-- Portfolio Section Heading-->
+            <h2 class="page-section-heading text-center text-uppercase text-secondary pb-lg">Fuel Quote Form</h2>
+             <!--Table of contents-->
+             <form action="/fuelQuote" method="POST" class="form-control form-control-md">
+                
+                    <label for="gallonsRequested">Gallons Requested:</label>
+                    <input type="number" id="gallonsRequested" name="gallonsRequested" class="form-control" value="<%= tclientProfile.gallonsRequested %>" required>
+                
+                
+                
+                    <label for="deliveryAddress">Delivery Address:</label>
+                    <input type="text" id="deliveryAddress" class="form-control" name="deliveryAddress" value="<%= tclientProfile.deliveryAddress %>" readonly>
+               
+                
+                
+                 
+                    <label for="deliveryDate">Delivery Date:</label>
+                <input type="date" id="deliveryDate" class="form-control" name="deliveryDate" value="<%= tclientProfile.deliveryDate %>" required>
+                
+                
+                
+               
+                <label for="suggestedPrice">Suggested Price / gallon:</label>
+                <input type="number" id="suggestedPrice" class="form-control" name="suggestedPrice" value="<%= tclientProfile.suggestedPrice %>" readonly>
+                
+                 
+                <label for="totalAmountDue">Total Amount Due:</label>
+                <input type="number" id="totalAmountDue"  class="form-control" name="totalAmountDue" value="<%= tclientProfile.totalAmountDue %>" readonly>
+                
+                <button class="form-control" type="submit">Submit</button>
+              </form>
+            <!-- Icon Divider-->
+                          
+        </div>
+    </section>
+        
+       
+    
+    
 
 
 
