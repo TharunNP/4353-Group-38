@@ -7,8 +7,19 @@
 const express = require('express')
 var bodyParser = require('body-parser')
 let alert = require('alert'); 
-var app = express()
+const { default: mongoose } = require('mongoose');
+var app = express();
+const uri = "mongodb+srv://ojasgupta25:gesjy4-viqkaJ-cexdym@cluster0.ugxrmh1.mongodb.net/?retryWrites=true&w=majority";
 
+async function connect(){
+  try{
+    await mongoose.connect(uri);
+    console.log("Connected to mongo DB");
+  }catch (error){
+    console.error(error);
+  }
+}
+connect();
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
 
