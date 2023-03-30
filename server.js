@@ -3,23 +3,72 @@
 // every time you change code you need to relaunch the server 
 // to get around it you can type in "sudo npm install -g nodemon"
 // than to run the server you can say nodemon server.js instead of node server.js
-//import * as cheerio from 'cheerio';
-const express = require('express')
+
+
+
+
+
+
+//database methods 
+
+
+
+
+
+
+const mysql = require('mysql2');
+const dotenv = require('dotenv');
+dotenv.config()
+
+const pool = mysql.createPool({
+    host: process.env.MYSQL_HOST,
+    user: process.env.MYSQL_USER, 
+    password:process.env.MYSQL_PASSWORD,
+    database: process.env.MYSQL_DATABASE
+}).promise()
+
+async function getUsers(){
+    const [rows] = await pool.query("SELECT * FROM users")
+    return rows
+}
+ async function getUser(username){
+    const [rows]= await pool.query('SELECT * FROM users WHERE username = ? ', [username])
+    return rows;
+}
+ async function createUser(username, password, add1, add2, city, state, zip, info_complete){
+    const result = await pool.query('INSERT INTO users (username, password, address1, address2, city, state, zip, info_complete )VALUES (?,?,?,?,?,?,?,?)', [username, password, add1, add2, city, state, zip, info_complete])
+    return result;
+}
+
+
+
+// testing methods made - ojas
+// const user1 = await getUser('fakeuser');
+// console.log(user1);
+// const result = await createUser('newuser2','pass', '123 ln', 'apt12', 'houston','TX', '75025', '1');
+// console.log(result);
+// const users = await getUsers()
+// console.log(users);
+
+
+
+
+
+// how to use methods 
+// app.get('/testdb', async (req, res) => {
+//   const users = await getUsers()
+//   res.send(users);
+// });
+
+
+
+// end database 
+
+const express = require('express');
 var bodyParser = require('body-parser')
 let alert = require('alert'); 
-const { default: mongoose } = require('mongoose');
 var app = express();
-const uri = "mongodb+srv://ojasgupta25:gesjy4-viqkaJ-cexdym@cluster0.ugxrmh1.mongodb.net/?retryWrites=true&w=majority";
 
-async function connect(){
-  try{
-    await mongoose.connect(uri);
-    console.log("Connected to mongo DB");
-  }catch (error){
-    console.error(error);
-  }
-}
-connect();
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -28,7 +77,7 @@ app.use(bodyParser.json());
 // so that the css file is sent to the front end aswell
 app.use(express.static(__dirname + '/public/'));
 // port we are using 
-const port = 3000;
+const port = 8080;
 // global variables
 let logged_in = false; // tracks if user is logged in or not 
 let curr_user = { // get from data base and store in here for easy access
@@ -81,6 +130,12 @@ var db_info_completed = false;
 // '/' is the default route when someone opens the website on local port 3000
 app.get('/', (req, res) => {
   res.sendFile(__dirname+ "/index.html");
+});
+
+// THIS IS HOW YOU USE DATABASE METHODS FROM DATABASE.JS MAKE SURE TO ADD THEM TO THE IMPORT STATEMENT UP TOP FIRST
+app.get('/testdb', async (req, res) => {
+  const users = await getUsers()
+  res.send(users);
 });
 
 // registration form 
