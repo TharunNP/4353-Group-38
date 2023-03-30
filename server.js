@@ -35,11 +35,28 @@ async function getUsers(){
     const [rows]= await pool.query('SELECT * FROM users WHERE username = ? ', [username])
     return rows;
 }
- async function createUser(username, password, add1, add2, city, state, zip, info_complete){
-    const result = await pool.query('INSERT INTO users (username, password, address1, address2, city, state, zip, info_complete )VALUES (?,?,?,?,?,?,?,?)', [username, password, add1, add2, city, state, zip, info_complete])
+async function createUser(username, password, fullName, add1, add2, city, state, zip, info_complete){
+    const result = await pool.query('INSERT INTO users (username, password, fullName, address1, address2, city, state, zip, info_complete )VALUES (?,?,?,?,?,?,?,?,?)', [username, password, fullName, add1, add2, city, state, zip, info_complete])
     return result;
 }
 
+// to use for the middle page where user is mandatory completing profile
+async function updateUser(fullName, add1, add2, city, state, zip, info_complete){
+  const result = await pool.query('INSERT INTO users (fullName, address1, address2, city, state, zip, info_complete )VALUES (?,?,?,?,?,?,?)', [fullName, add1, add2, city, state, zip, info_complete])
+  return result;
+}
+
+// get all user quotes for a username
+async function getUserQuotes(username){
+  const [rows] = await pool.query('SELECT * FROM quotes WHERE user_id=?', [username])
+  return rows;
+}
+
+// add a new quote for a username
+async function addQuote(user_id, gallons, address, date, suggested_price, total_amount_due){
+  const result = await pool.query('INSERT INTO quotes (user_id, gallons, address, date, suggested_price, total_amount_due ) VALUES (?,?,?,?,?,?)', [user_id, gallons, address, date, suggested_price, total_amount_due])
+  return result;
+}
 
 
 // testing methods made - ojas
@@ -49,6 +66,8 @@ async function getUsers(){
 // console.log(result);
 // const users = await getUsers()
 // console.log(users);
+// const quote = getUserQuotes('fakeuser')
+// console.log(quote);
 
 
 
@@ -134,8 +153,20 @@ app.get('/', (req, res) => {
 
 // THIS IS HOW YOU USE DATABASE METHODS FROM DATABASE.JS MAKE SURE TO ADD THEM TO THE IMPORT STATEMENT UP TOP FIRST
 app.get('/testdb', async (req, res) => {
-  const users = await getUsers()
-  res.send(users);
+  // const user1 = await getUser('fakeuser');
+// console.log(user1);
+// const result = await createUser('newuser2','pass', '123 ln', 'apt12', 'houston','TX', '75025', '1');
+// console.log(result);
+// const users = await getUsers()
+// console.log(users);
+// const quote = getUserQuotes('fakeuser')
+// console.log(quote);
+  // const quote = await getUserQuotes('fakeuser')
+  // console.log(quote);
+  const quote = await addQuote('fakeuser', '60', '1232423 ln', '2008-11-11', '25','30000');
+  console.log(quote);
+  const quotes = await getUserQuotes('fakeuser')
+  console.log(quotes);
 });
 
 // registration form 
