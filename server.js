@@ -3,11 +3,110 @@
 // every time you change code you need to relaunch the server 
 // to get around it you can type in "sudo npm install -g nodemon"
 // than to run the server you can say nodemon server.js instead of node server.js
-//import * as cheerio from 'cheerio';
-const express = require('express')
-var bodyParser = require('body-parser')
+
+
+
+
+
+
+//database methods 
+
+
+const mysql = require('mysql2/promise');
+const dotenv = require('dotenv');
+dotenv.config()
+
+const pool = mysql.createPool({      //all the following values need to be decleared in .env file to match your database, such as database address, password etc.
+    host: process.env.MYSQL_HOST,    
+    user: process.env.MYSQL_USER, 
+    password:process.env.MYSQL_PASSWORD,
+    database: process.env.MYSQL_DATABASE,
+    port: process.env.MYSQL_PORT
+});
+
+pool.getConnection((err, connection) => {
+  if (err) {
+    console.error('Error connecting to the database: ', err);
+  } else {
+    console.log('Connected to the database!');
+    connection.release();
+  }
+});
+
+
+async function getUsers(){
+    const [rows] = await pool.query("SELECT * FROM users")
+    return rows
+}
+async function getUser(username) {
+  const [rows] = await pool.query('SELECT * FROM users WHERE username = ?', [username]);
+  if (rows.length) {
+      return rows[0];
+  }
+  return null;
+}
+
+async function createUser(username, password, fullName, add1, add2, city, state, zip, info_complete){
+    const result = await pool.query('INSERT INTO users (username, password, fullName, address1, address2, city, state, zip, info_complete )VALUES (?,?,?,?,?,?,?,?,?)', [username, password, fullName, add1, add2, city, state, zip, info_complete])
+    return result;
+}
+
+// to use for the middle page where user is mandatory completing profile
+async function updateUser(fullname, address1, address2, city, state, zip, info_complete, username){
+  try {
+    const [rows] = await pool.query('UPDATE users SET fullname=?, address1=?, address2=?, city=?, state=?, zip=?, info_complete=? WHERE username=?', [fullname, address1, address2, city, state, zip, info_complete, username]);
+    return rows;
+  } catch (error) {
+    console.error('Error updating user: ', error);
+    throw error;
+  }
+}
+
+// get all user quotes for a username
+async function getUserQuotes(username){
+  const [rows] = await pool.query('SELECT * FROM quotes WHERE user_id=?', [username])
+  return rows;
+}
+
+// add a new quote for a username
+async function addQuote(user_id, gallons, address, date, suggested_price, total_amount_due){
+  const result = await pool.query('INSERT INTO quotes (user_id, gallons, address, date, suggested_price, total_amount_due ) VALUES (?,?,?,?,?,?)', [user_id, gallons, address, date, suggested_price, total_amount_due])
+  return result;
+}
+
+/*
+// testing methods made - ojas
+async function testDatabase() {
+  console.log('testing database methods');
+  const user1 = await getUser('fakeuser');
+  console.log(user1);
+  const result = await createUser('newuser2','pass', '123 ln', 'apt12', 'houston','TX', '75025', '1');
+  console.log(result);
+  const users = await getUsers()
+  console.log(users);
+  const quote = getUserQuotes('fakeuser')
+  console.log(quote);
+}
+
+testDatabase();
+*/
+/*
+// how to use methods 
+app.get('/testdb', async (req, res) => {
+   const users = await getUsers()
+   res.send(users);
+ });
+*/
+
+
+// end database 
+
+const express = require('express');
+var bodyParser = require('body-parser');
 let alert = require('alert'); 
-var app = express()
+var app = express();
+
+
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -17,7 +116,7 @@ app.use(bodyParser.json());
 // so that the css file is sent to the front end aswell
 app.use(express.static(__dirname + '/public/'));
 // port we are using 
-const port = 3000;
+const port = 8080;
 // global variables
 let logged_in = false; // tracks if user is logged in or not 
 let curr_user = { // get from data base and store in here for easy access
@@ -53,27 +152,33 @@ let curr_user = { // get from data base and store in here for easy access
   };
 
 
-
-
-// dummy database (fake data base)
-var db_username = "john.doe";
-var db_add1 = "3100 university dr";
-var db_add2 = "apt 1234";
-var db_city= "houston";
-var db_state = "Texas";
-var db_zip = 75078;
-var db_quote_arr= [512,432,234,654,677];
-var db_password = "1234";
-var db_info_completed = false;
-// end of fake database 
-
 // '/' is the default route when someone opens the website on local port 3000
 app.get('/', (req, res) => {
   res.sendFile(__dirname+ "/index.html");
 });
 
+/*
+// THIS IS HOW YOU USE DATABASE METHODS FROM DATABASE.JS MAKE SURE TO ADD THEM TO THE IMPORT STATEMENT UP TOP FIRST
+app.get('/testdb', async (req, res) => {
+   const user1 = await getUser('fakeuser');
+ console.log(user1);
+ const result = await createUser('newuser2','pass', '123 ln', 'apt12', 'houston','TX', '75025', '1');
+ console.log(result);
+ const users = await getUsers()
+ console.log(users);
+ const quote = getUserQuotes('fakeuser')
+ console.log(quote);
+  quote = await getUserQuotes('fakeuser')
+ console.log(quote);
+  quote = await addQuote('fakeuser', '60', '1232423 ln', '2008-11-11', '25','30000');
+  console.log(quote);
+  const quotes = await getUserQuotes('fakeuser')
+  console.log(quotes);
+});
+*/
+
 // registration form 
-app.post('/reg', (req, res) => {
+app.post('/reg', async (req, res) => {
     
 	const username = req.body.username;
     const password = req.body.pass;
@@ -81,22 +186,18 @@ app.post('/reg', (req, res) => {
   console.log(username);
   console.log(password);
     
-    // check if username exists in database
-        // todo
-    //create new user and log in 
-        // todo
-    // temp sol
-    if(username == db_username){
-        alert("Username already exists");
-        
-    }
-    else{
-        curr_user.username = username;
-        // add to database later 
-
-        // redirect to profile management page 
-        res.redirect('/profile');
-    }
+  const userExists = await getUser(username);
+  if (userExists) {
+      // User already exists
+      alert('Username already exists');
+      res.redirect('/register');
+  } else {
+      // Create new user and log in
+      curr_user.username = username;
+      // Add user to the database
+      await createUser(username, password, '', '', '', '', '', '', '0');
+      res.redirect('/profile');
+  }
     
 });
 
@@ -104,7 +205,7 @@ app.post('/reg', (req, res) => {
 // profile management page 
 app.get('/profile', (req, res) => {
     // check if user info is complete from database
-    if (db_info_completed){
+    if (curr_user.info_completed === true){
         res.redirect('/user');
     }
     else{
@@ -115,22 +216,22 @@ app.get('/profile', (req, res) => {
   });
 
 // profile management form submit 
-app.post('/profile', (req, res) => {
+app.post('/profile', async (req, res) => {
     const fname = req.body.fullname;
-    const address1 = req.body.address1;
-    const address2 = req.body.address2;
+    const taddress1 = req.body.address1;
+    const taddress2 = req.body.address2;
     const zip = req.body.zipcode;
     const city = req.body.city;
     const state = req.body.state;
 
     // set current cliant infotmation 
     curr_user.fname = fname;
-    curr_user.add = address1;
-        curr_user.add2 = address2;
+    curr_user.add = taddress1;
+        curr_user.add2 = taddress2;
         curr_user.city = city;
         curr_user.state = state;
         curr_user.zip = zip;
-        curr_user.info_completed = true;
+        //curr_user.info_completed = true;
         curr_user.user_history = [{ 
             gallons:0,
             add:"nothing st",
@@ -153,16 +254,20 @@ app.post('/profile', (req, res) => {
             total: 149
         }];
     console.log(curr_user);
-    // save data into data base later
-    //  db_username = "john.doe";
-    //  db_add1 = "3100 university dr";
-    // var db_add2 = "apt 1234";
-    // var db_city= "houston";
-    // var db_state = "Texas";
-    // var db_zip = 75078;
-   
+
+
+    if (fname && taddress1 && zip && city && state) { // Check if all required fields are present
+    curr_user.info_completed = true;
+
+    //console.log(curr_user);
+    await updateUser(curr_user.fname, curr_user.add, curr_user.add2, curr_user.city, curr_user.state, curr_user.zip, curr_user.info_completed, curr_user.username);
+
     logged_in = true;
     res.redirect('/user');
+  } else {
+    // Inform user that all required fields are not present
+    res.send('Please fill in all required fields');
+  }
 });
 
 let tclientProfile = {
@@ -301,23 +406,53 @@ res.send('Form submitted successfully!');
 
 });
 
+const bcrypt = require('bcrypt');
 //login route
-app.post('/login', (req, res) => {
+app.post('/login', async (req, res) => {
   const username = req.body.usernameInput;
   const password = req.body.passwordInput;
 
+  try {
+    // Get the user from the database based on the entered username
+    const user = await getUser(username);
 
+    // If no user is found, return an error message
+    if (!user) {
+      return res.status(400).send('Invalid username');
+    }
+
+    // Compare the entered password with the hashed password stored in the database
+    //const passwordMatches = await bcrypt.compare(password, user.password);
+    // If the passwords match, set the current user and redirect to the profile page
+    if (password === user.password) {
+      logged_in = true;
+      curr_user.username = user.username;
+      curr_user.fname = user.fullname;
+      curr_user.add = user.address1;
+      curr_user.add2 = user.address2;;
+      curr_user.city = user.city;
+      curr_user.state = user.state;
+      curr_user.zip = user.zip;
+      curr_user.info_completed = user.info_complete;
+
+      if(user.info_complete == true){
+        console.log("current user info is complete");
+        res.redirect('/user');
+      }
+      else{
+        console.log("current user info is not complete");
+        res.sendFile(__dirname+ "/profile_manage.html");
+      }
+      
+    } else {
+      return res.status(400).send('Invalid password');
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send('Internal server error');
+  }
   //check if username exists in databasem if true, check if pw matches
   //if both conditions are met, set curr_user and logged_in to true and redirect to second page
-  if(username === db_username && password === db_password){
-    curr_user.username = username;
-    logged_in = true;
-    
-    res.redirect('/user');
-  } else {
-    console.log('Invalid login credentials.');
-    res.send('Invalid login credentials.');
-  }
 });
 
 
