@@ -239,7 +239,7 @@ app.get('/profile', (req, res) => {
             s_price: 43,
             total: 149
         }];
-    console.log(curr_user);
+    
 
 
     if (fname && taddress1 && zip && city && state) { // Check if all required fields are present
@@ -413,11 +413,10 @@ app.post('/login', async (req, res) => {
     // Compare the entered password with the hashed password stored in the database
     //const passwordMatches = await bcrypt.compare(password, user.password);
     // If the passwords match, set the current user and redirect to the profile page
-    console.log(user[0].password);
     if (password === user[0].password) {
       logged_in = true;
       curr_user.username = user[0].username;
-      curr_user.fname = user[0].fullname;
+      curr_user.fname = user[0].fullName;
       curr_user.add = user[0].address1;
       curr_user.add2 = user[0].address2;;
       curr_user.city = user[0].city;
