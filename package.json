@@ -20,6 +20,7 @@
   "homepage": "https://github.com/TharunNP/4353-Group-38#readme",
   "dependencies": {
     "alert": "^5.1.4",
+    "bcrypt": "^5.1.0",
     "body-parser": "^1.20.2",
     "cheerio": "^1.0.0-rc.12",
     "dotenv": "^16.0.3",
