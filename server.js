@@ -89,7 +89,7 @@ var app = express();
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
-
+const bcrypt = require ('bcrypt');
 // parse application/json
 app.use(bodyParser.json());
 // so that the css file is sent to the front end aswell
@@ -143,9 +143,9 @@ app.get('/testdb', async (req, res) => {
   // const quote = await getUserQuotes('fakeuser')
   // console.log(quote);
   const quote = await addQuote('fakeuser', '60', '1232423 ln', '2008-11-11', '25','30000');
-  console.log(quote);
+  //console.log(quote);
   const quotes = await getUserQuotes('fakeuser')
-  console.log(quotes);
+  //console.log(quotes);
 });
 
 // registration form 
@@ -153,9 +153,10 @@ app.post('/reg', async (req, res) => {
     
 	const username = req.body.username;
     const password = req.body.pass;
+    
 
-  console.log(username);
-  console.log(password);
+  //console.log(username);
+  //console.log(password);
     
   const userExists = await getUser(username);
   if (userExists[0]) {
@@ -166,7 +167,8 @@ app.post('/reg', async (req, res) => {
       // Create new user and log in
       curr_user.username = username;
       // Add user to the database
-       await createUser(username, password, '', '', '', '', '', '', '0');
+      const hash = await bcrypt.hash(password,5)
+       await createUser(username, hash, '', '', '', '', '', '', '0');
       
       res.redirect('/profile');
   }
@@ -212,8 +214,7 @@ app.get('/profile', (req, res) => {
 
     //console.log(curr_user);
     await updateUser(curr_user.username, curr_user.fname, curr_user.add, curr_user.add2, curr_user.city, curr_user.state, curr_user.zip, curr_user.info_completed, curr_user.username);
-    allusers = await getUsers();
-    console.log(allusers);
+    
     logged_in = true;
     res.redirect('/user');
   } else {
@@ -233,7 +234,7 @@ let tclientProfile = {
 
 //fuel quote
 app.post('/fuelQuote', async (req, res) => {
-  console.log('app.post route called'); // debugging statement
+  //console.log('app.post route called'); // debugging statement
   const { gallonsRequested, deliveryDate } = req.body;
   //let gallonsRequested = req.body.gallonsRequested;
   //let deliveryDate = req.body.deliveryDate;
@@ -259,7 +260,7 @@ app.post('/fuelQuote', async (req, res) => {
   // const month = parseInt(dateParts[1]) - 1; // JS months are zero-based
   // const day = parseInt(dateParts[2]);
   // const dateObj = new Date(year+"-"+ month+"-"+ day);
-  console.log(deliveryDate);
+  //console.log(deliveryDate);
   tclientProfile = {
     gallonsRequested,
     deliveryAddress,
@@ -267,12 +268,12 @@ app.post('/fuelQuote', async (req, res) => {
     suggestedPrice,
     totalAmountDue
   };
-  console.log(deliveryDate); // debugging statement
+  //console.log(deliveryDate); // debugging statement
 
 try {
     await addQuote(curr_user.username, gallonsRequested, deliveryAddress, deliveryDate, suggestedPrice, totalAmountDue);
     dbhistory = await getUserQuotes(curr_user.username);
-    console.log(dbhistory);
+    //console.log(dbhistory);
     curr_user.user_history = dbhistory;
     res.redirect('/user');
   } catch (error) {
@@ -377,7 +378,7 @@ res.send('Form submitted successfully!');
 
 //login route
 //login route
-const bcrypt = require('bcrypt');
+
 app.post('/login', async (req, res) => {
   const username = req.body.usernameInput;
   const password = req.body.passwordInput;
@@ -394,7 +395,8 @@ app.post('/login', async (req, res) => {
     // Compare the entered password with the hashed password stored in the database
     //const passwordMatches = await bcrypt.compare(password, user.password);
     // If the passwords match, set the current user and redirect to the profile page
-    if (password === user[0].password) {
+    const isValid = await bcrypt.compare(password, user[0].password)
+    if (isValid) {
       logged_in = true;
       curr_user.username = user[0].username;
       curr_user.fname = user[0].fullName;
@@ -408,11 +410,11 @@ app.post('/login', async (req, res) => {
       curr_user.user_history = dbhistory;
       
       if(user[0].info_complete == true){
-        console.log("current user info is complete");
+        //console.log("current user info is complete");
         res.redirect('/user');
       }
       else{
-        console.log("current user info is not complete");
+       // console.log("current user info is not complete");
         res.sendFile(__dirname+ "/profile_manage.html");
       }
       
