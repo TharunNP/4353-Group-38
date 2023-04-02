@@ -52,6 +52,10 @@ async function addQuote(user_id, gallons, address, date, suggested_price, total_
   const result = await pool.query('INSERT INTO quotes (user_id, gallons, address, date, suggested_price, total_amount_due ) VALUES (?,?,?,?,?,?)', [user_id, gallons, address, date, suggested_price, total_amount_due])
   return result;
 }
+async function getUserQuotesDate(username){
+  const [rows] = await pool.query('SELECT DATE(date) FROM quotes WHERE user_id=?', [username])
+  return rows;
+}
 
 
 // testing methods made - ojas
@@ -103,27 +107,7 @@ let curr_user = { // get from data base and store in here for easy access
     city:'',
     state: '',
     info_completed: false,
-    user_history:[{ 
-        gallons:0,
-        add:"nothing st",
-        date: "0/3/32",
-        s_price: 43,
-        total: 149
-    },
-    { 
-        gallons:1,
-        add:"nothing st",
-        date: "0/3/32",
-        s_price: 43,
-        total: 149
-    },
-    { 
-        gallons:2,
-        add:"nothing st",
-        date: "0/3/32",
-        s_price: 43,
-        total: 149
-    }]
+    user_history:[]
   };
 
 
@@ -182,7 +166,8 @@ app.post('/reg', async (req, res) => {
       // Create new user and log in
       curr_user.username = username;
       // Add user to the database
-      await createUser(username, password, '', '', '', '', '', '', '0');
+       await createUser(username, password, '', '', '', '', '', '', '0');
+      
       res.redirect('/profile');
   }
     
@@ -218,27 +203,7 @@ app.get('/profile', (req, res) => {
         curr_user.state = state;
         curr_user.zip = zip;
         //curr_user.info_completed = true;
-        curr_user.user_history = [{ 
-            gallons:0,
-            add:"nothing st",
-            date: "0/3/32",
-            s_price: 43,
-            total: 149
-        },
-        { 
-            gallons:1,
-            add:"nothing st",
-            date: "0/3/32",
-            s_price: 43,
-            total: 149
-        },
-        { 
-            gallons:2,
-            add:"nothing st",
-            date: "0/3/32",
-            s_price: 43,
-            total: 149
-        }];
+        curr_user.user_history = [];
     
 
 
@@ -267,14 +232,14 @@ let tclientProfile = {
 };
 
 //fuel quote
-app.post('/fuelQuote', (req, res) => {
+app.post('/fuelQuote', async (req, res) => {
   console.log('app.post route called'); // debugging statement
-  //const { gallonsRequested, deliveryDate } = req.body;
+  const { gallonsRequested, deliveryDate } = req.body;
   //let gallonsRequested = req.body.gallonsRequested;
   //let deliveryDate = req.body.deliveryDate;
 
-  const gallonsRequested = 10;
-  const deliveryDate = '2023-01-01';
+  //const gallonsRequested = 10;
+  //const deliveryDate = '2023-01-01';
   // Validate gallonsRequested and deliveryDate
   if (!gallonsRequested || isNaN(gallonsRequested)) {
     return res.status(400).send('Gallons Requested must be a number');
@@ -285,16 +250,16 @@ app.post('/fuelQuote', (req, res) => {
   }
   
   
-  const deliveryAddress = 'Address placeholder';
+  const deliveryAddress = curr_user.add;
   const suggestedPrice = 2.50;
   const totalAmountDue = gallonsRequested * suggestedPrice;
 
-    const dateParts = deliveryDate.split('-');
-  const year = parseInt(dateParts[0]);
-  const month = parseInt(dateParts[1]) - 1; // JS months are zero-based
-  const day = parseInt(dateParts[2]);
-  const dateObj = new Date(year, month, day);
-  
+  //   const dateParts = deliveryDate.split('-');
+  // const year = parseInt(dateParts[0]);
+  // const month = parseInt(dateParts[1]) - 1; // JS months are zero-based
+  // const day = parseInt(dateParts[2]);
+  // const dateObj = new Date(year+"-"+ month+"-"+ day);
+  console.log(deliveryDate);
   tclientProfile = {
     gallonsRequested,
     deliveryAddress,
@@ -302,10 +267,19 @@ app.post('/fuelQuote', (req, res) => {
     suggestedPrice,
     totalAmountDue
   };
+  console.log(deliveryDate); // debugging statement
 
-  console.log(tclientProfile); // debugging statement
+try {
+    await addQuote(curr_user.username, gallonsRequested, deliveryAddress, deliveryDate, suggestedPrice, totalAmountDue);
+    dbhistory = await getUserQuotes(curr_user.username);
+    console.log(dbhistory);
+    curr_user.user_history = dbhistory;
+    res.redirect('/user');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Server error');
+  }
 
-  res.redirect('/user');
 });
 
 
@@ -327,6 +301,13 @@ MyObject = {
     load_second_page: function(res) { 
         // get values from database for history
         app.set('view engine', 'ejs');
+        // console.log(curr_user.user_history.length);
+        // var lann = curr_user.user_history.length;
+        
+        // for(var i=0; i<lann; i++){
+        //   curr_user.user_history[i].date = curr_user.user_history[i].date[1];
+        //   console.log("got herer");
+        // }
         res.render('index2', {
             // for display user info
             curr_user: curr_user,
@@ -423,7 +404,9 @@ app.post('/login', async (req, res) => {
       curr_user.state = user[0].state;
       curr_user.zip = user[0].zip;
       curr_user.info_completed = user[0].info_complete;
-
+      dbhistory = await getUserQuotes(curr_user.username);
+      curr_user.user_history = dbhistory;
+      
       if(user[0].info_complete == true){
         console.log("current user info is complete");
         res.redirect('/user');
