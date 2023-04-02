@@ -5,8 +5,14 @@
   "type": "Commonjs",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "test": "jest --runInBand --detectOpenHandles --forceExit"
+  },
+  "jest": {
+    "collectCoverage": true,
+    "coverageReporters": [
+      "lcov"
+    ],
+    "coverageDirectory": "./output/code-coverage/"
   },
   "repository": {
     "type": "git",
