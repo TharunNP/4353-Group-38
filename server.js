@@ -117,7 +117,7 @@ app.get('/', (req, res) => {
 
 // registration form 
 app.post('/reg', async (req, res) => {
-	MyObject.reg_action(req,res);
+  MyObject.reg_action(req,res);
 });
 
 
@@ -143,9 +143,88 @@ let tclientProfile = {
 
 //fuel quote
 app.post('/fuelQuote', async (req, res) => {
-  MyObject.fuelQuote_post_action(req, res);
+  console.log('app.post route called'); // debugging statement
+  const { gallonsRequested, deliveryDate } = req.body;
+  //let gallonsRequested = req.body.gallonsRequested;
+  //let deliveryDate = req.body.deliveryDate;
 
+  //const gallonsRequested = 10;
+  //const deliveryDate = '2023-01-01';
+  // Validate gallonsRequested and deliveryDate
+  if (!gallonsRequested || isNaN(gallonsRequested)) {
+    return res.status(400).send('Gallons Requested must be a number');
+  }
+  
+  if (!deliveryDate || !/^\d{4}-\d{2}-\d{2}$/.test(deliveryDate)) {
+    return res.status(400).send('Delivery Date must be in YYYY-MM-DD format');
+  }
+  
+  
+  const deliveryAddress = curr_user.add;
+  margin = 1.1;
+  if(curr_user.state === 'TX'){
+    margin += 0.02;
+    console.log("Texas user, adding 0.02 to margin");
+  }
+  else{
+    margin += 0.04;
+    console.log("Non-Texas user, adding 0.04 to margin");
+  }
+
+  if(gallonsRequested > 1000){
+    margin += 0.02;
+    console.log("Gallons requested > 1000, adding 0.02 to margin");
+  }
+  else{
+    margin += 0.03;
+    console.log("Gallons requested <= 1000, adding 0.03 to margin");
+  }
+
+  
+  if(curr_user.newClient === false){
+    margin -= 0.01;
+    console.log("User has history, subtracting 0.01 from margin");
+  }
+  else{
+    console.log("User has no history, no change to margin");
+  }
+  
+  const suggestedPrice = parseFloat((1.50 * margin).toFixed(2));
+  const totalAmountDue = parseFloat((gallonsRequested * suggestedPrice).toFixed(2));
+
+  const dateParts = deliveryDate.split('-');
+  const year = parseInt(dateParts[0]);
+  const month = parseInt(dateParts[1]) - 1; // JS months are zero-based
+  const day = parseInt(dateParts[2]);
+  const dateObj = new Date(year, month, day);
+  
+  tclientProfile = {
+    gallonsRequested,
+    deliveryAddress,
+    deliveryDate,
+    suggestedPrice,
+    totalAmountDue
+  };
+  console.log(tclientProfile); // debugging statement
+
+try {
+    await addQuote(curr_user.username, gallonsRequested, deliveryAddress, deliveryDate, suggestedPrice, totalAmountDue);
+    res.redirect('/user');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Server error');
+  }
+  // Add the new quote to the user's history
+  curr_user.user_history.push({
+    gallons: gallonsRequested,
+    address: deliveryAddress,
+    date: deliveryDate,
+    suggested_price: suggestedPrice,
+    total_amount_due: totalAmountDue
+ });
+ curr_user.newClient = false;
 });
+
 
 
 app.get('/user', (req, res) => {
