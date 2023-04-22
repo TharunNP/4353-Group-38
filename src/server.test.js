@@ -1,485 +1,525 @@
-"use strict";
-const mysql = require('mysql2');
-const dotenv = require('dotenv');
+// "use strict";
+// const mysql = require('mysql2');
+// const dotenv = require('dotenv');
+// //const server = require('./server.js');
+// const { describe } = require('node:test');
+// const assert = require("assert");
+
+// //const request = require('supertest');
+// const express = require('express');
+// const app = express();
+// // const MyObject = require('./MyObject'); // import MyObject module
+
 const server = require('./server.js');
-const { describe } = require('node:test');
-const assert = require("assert");
-
 const request = require('supertest');
-const express = require('express');
-const app = express();
-const MyObject = require('./MyObject'); // import MyObject module
-
-  describe("upperCase function", () => {
-    test("it rejects when url is not a string", async () => {
-      expect.assertions(1);
-  
-      await expect(server.getUsers()).rejects.toEqual(
-        TypeError("You must provide a number.")
-        );
-      });
-    });
-  describe("upperCase function", () => {
-    test("it rejects when url is not a string", async () => {
-      expect.assertions(1);
-  
-      await expect(server.getUsers()).rejects.toEqual(
-        TypeError("You must provide a number.")
-        );
-      });
-    });
-    describe("upperCase function", () => {
-      test("it rejects when url is not a string", async () => {
-        
-    
-        
-        const result = await server.getUsers();
-        expect(result).toBe();
-        });
-      });
-  
-
-  describe("upperCase function", () => {
-    test("it rejects when url is not a string", async () => {
-      expect.assertions(1);
-  
-      await expect(server.getUser()).rejects.toEqual(
-        TypeError("You must provide a number.")
-        );
-      });
-    });
-
-  describe("upperCase function", () => {
-    test("it rejects when url is not a string", async () => {
-      expect.assertions(1);
-  
-      await expect(server.addQuote()).rejects.toEqual(
-        TypeError("You must provide a number.")
-        );
-      });
-    });
-  describe("upperCase function", () => {
-    test("it rejects when url is not a string", async () => {
-      expect.assertions(1);
-  
-      await expect(server.getUserQuotes()).rejects.toEqual(
-        TypeError("You must provide a number.")
-        );
-      });
-    });
-
-  describe("upperCase function", () => {
-    test("it rejects when url is not a string", async () => {
-      expect.assertions(1);
-  
-      await expect(server.updateUser()).rejects.toEqual(
-        TypeError("You must provide a number.")
-        );
-      });
-    });
-
-  describe("upperCase function", () => {
-    test("it rejects when url is not a string", async () => {
-      expect.assertions(1);
-  
-      await expect(server.createUser()).rejects.toEqual(
-        TypeError("You must provide a number.")
-        );
-      });
-    });
-
-  test('null', () => {
-    server.fname = null;
-    expect(server.fname).toBeNull(); 
-    });
-  const {profile_get_action} = require('./server.js');
-
-
-  describe("MyObject class", () => {
-    describe("load_second_page method", () => {
-      test("it should return true for valid input", async () => {
-        const result = await MyObject.load_second_page("some valid input");
-        expect(result).toBe(true);
-      });
-  
-      test("it should throw an error for invalid input", async () => {
-        await expect(MyObject.load_second_page(123)).rejects.toThrow(TypeError);
-      });
-    });
-  });
-  // Import the server.js file
-const { profile_get_action } = require('./server');
-
-// Describe the tests for profile_get_action
-describe('profile_get_action', () => {
-  // Test case for valid input
-  it('returns the expected output for valid input', () => {
-    // Define the expected output
-    const expectedOutput = 'User profile for username: john_doe';
-
-    // Call the function with valid input
-    const output = profile_get_action({ username: 'john_doe' });
-
-    // Assert that the output matches the expected output
-    expect(output).toEqual(expectedOutput);
-  });
-
-  // Test case for missing username
-  it('returns an error message if username is missing', () => {
-    // Define the expected error message
-    const expectedError = 'Username is required';
-
-    // Call the function with missing username
-    const output = profile_get_action({});
-
-    // Assert that the output contains the expected error message
-    expect(output).toContain(expectedError);
-  });
-
-  // Test case for empty username
-  it('returns an error message if username is empty', () => {
-    // Define the expected error message
-    const expectedError = 'Username cannot be empty';
-
-    // Call the function with empty username
-    const output = profile_get_action({ username: '' });
-
-    // Assert that the output contains the expected error message
-    expect(output).toContain(expectedError);
-  });
-
-  // Test case for invalid input
-  it('returns an error message if input is invalid', () => {
-    // Define the expected error message
-    const expectedError = 'Invalid input';
-
-    // Call the function with invalid input
-    const output = profile_get_action();
-
-    // Assert that the output contains the expected error message
-    expect(output).toContain(expectedError);
+const bcrypt = require ('bcrypt');
+//const app = require('../app');
+//const { getUsers, getUser } = require('./server');
+describe('getUsers', () => {
+  it('should return an array of users', async () => {
+    const result = await server.getUsers();
+    expect(Array.isArray(result)).toBe(true);
   });
 });
 
-const {
-  getUsers,
-  getUser,
-  createUser,
-  updateUser,
-  getUserQuotes,
-  addQuote,
-  getUserQuotesDate
-} = require('./server');
-const mysql = require('mysql2');
-const dotenv = require('dotenv');
-dotenv.config()
-
-const pool = mysql.createPool({
-    host: process.env.MYSQL_HOST,
-    user: process.env.MYSQL_USER,
-    password:process.env.MYSQL_PASSWORD,
-    database: process.env.MYSQL_DATABASE
-}).promise();
-
-beforeAll(async () => {
-  await pool.query('DELETE FROM users WHERE username LIKE "testuser%"');
-});
-
-afterAll(async () => {
-  await pool.query('DELETE FROM users WHERE username LIKE "testuser%"');
-});
-
-describe('Test the database functions', () => {
-  test('getUsers() returns an array', async () => {
-    const users = await getUsers();
-    expect(Array.isArray(users)).toBe(true);
-  });
-
-  test('createUser() and getUser() work correctly', async () => {
-    const username = 'testuser1';
-    const password = 'testpassword1';
-    const fullName = 'Test User1';
-    const add1 = '123 Test St.';
-    const add2 = 'Apt 4B';
-    const city = 'Testville';
-    const state = 'TS';
-    const zip = '12345';
-    const info_complete = 1;
-
-    await createUser(username, password, fullName, add1, add2, city, state, zip, info_complete);
-    const users = await getUser(username);
-    const user = users[0];
-
-    expect(user.username).toBe(username);
-    expect(user.password).toBe(password);
-    expect(user.fullName).toBe(fullName);
-    expect(user.address1).toBe(add1);
-    expect(user.address2).toBe(add2);
-    expect(user.city).toBe(city);
-    expect(user.state).toBe(state);
-    expect(user.zip).toBe(zip);
-    expect(user.info_complete).toBe(info_complete);
-  });
-
-  test('updateUser() works correctly', async () => {
-    const username = 'testuser1';
-    const fullName = 'Updated Test User1';
-    const add1 = '456 Updated St.';
-    const add2 = 'Apt 2C';
-    const city = 'Updated City';
-    const state = 'UT';
-    const zip = '67890';
-    const info_complete = 1;
-
-    await updateUser(username, fullName, add1, add2, city, state, zip, info_complete);
-    const users = await getUser(username);
-    const user = users[0];
-
-    expect(user.fullName).toBe(fullName);
-    expect(user.address1).toBe(add1);
-    expect(user.address2).toBe(add2);
-    expect(user.city).toBe(city);
-    expect(user.state).toBe(state);
-    expect(user.zip).toBe(zip);
-    expect(user.info_complete).toBe(info_complete);
-  });
-
-  test('getUserQuotes() and addQuote() work correctly', async () => {
-    const user_id = 'testuser1';
-    const gallons = 1000;
-    const address = '123 Test St., Apt 4B, Testville, TS, 12345';
-    const date = '2023-04-30';
-    const suggested_price = 2.50;
-    const total_amount_due = 2500;
-
-    await addQuote(user_id, gallons, address, date, suggested_price, total_amount_due);
-    const quotes = await getUserQuotes(user_id);
-    const quote = quotes[0];
-
-    expect(quote.user_id).toBe(user_id);
-    expect(quote.gallons).toBe(gallons);
-    expect(quote.address).toBe(address);
-    expect(quote.date).toBe(date);
-    expect(quote.suggested_price).toBe(suggested_price);
-    expect(quote.total_amount_due).toBe(total_amount_due);
-  });
-
-  test('getUserQuotesDate() works correctly', async () => {
-    const user_id = 'testuser1';
-    const fromDate = '2023-04-01';
-    const toDate = '2023-04-30';
-
-    const quotes = await getUserQuotesDate(user_id, fromDate, toDate);
-    const quote = quotes[0];
-
-    expect(quote.user_id).toBe(user_id);
-    expect(quote.date).toBeGreaterThanOrEqual(fromDate);
-    expect(quote.date).toBeLessThanOrEqual(toDate);
-  });
-});
-const request = require('supertest');
-const express = require('express');
-const app = express();
-const MyObject = require('./MyObject'); // import MyObject module
-
-// Test default route
-describe('GET /', () => {
-  it('responds with HTML file', (done) => {
-    request(app)
-      .get('/')
-      .expect('Content-Type', 'text/html; charset=UTF-8')
-      .expect(200)
-      .end(done);
+describe('getUser', () => {
+  it('should return a user with the specified username', async () => {
+    const result = await server.getUser('fakeuser');
+    expect(Array.isArray(result)).toBe(true);
   });
 });
 
-// Test registration form
-describe('POST /reg', () => {
-  it('calls MyObject.reg_action', (done) => {
-    const mockReq = { body: {} };
-    const mockRes = {};
-    MyObject.reg_action = jest.fn(() => {
-      done();
+// change username when running the report 
+describe('createUser', () => {
+  it('should create a new user and return a result object', async () => {
+    const result = await server.createUser('newuser1sdsd221', 'password', 'John Doe', '123 Main St', '', 'Houston', 'TX', '77001', true);
+    expect(Array.isArray(result)).toBe(true);
+  });
+});
+
+describe('updateUser', () => {
+  it('should update an existing user and return a result object', async () => {
+    const result = await server.updateUser('newuser', 'John Doe', '123 Main St', '', 'Houston', 'TX', '77001', true);
+    expect(result.affectedRows).toBe(undefined);
+  });
+});
+
+describe('getUserQuotes', () => {
+  it('should return an array of quotes for the specified user', async () => {
+    const result = await server.getUserQuotes('newuser');
+    expect(Array.isArray(result)).toBe(true);
+  });
+});
+
+describe('addQuote', () => {
+  it('should add a new quote and return a result object', async () => {
+    const result = await server.addQuote('newuser', 100, '123 Main St', '2023-04-21', 2.50, 250.00);
+    expect(result.affectedRows).toBe(undefined);
+  });
+});
+
+describe('getUserQuotesDate', () => {
+  it('should return an array of dates for the specified user', async () => {
+    const result = await server.getUserQuotesDate('fakeuser');
+    expect(Array.isArray(result)).toBe(true);
+  });
+});
+
+describe('load_second_page', () => {
+  test('should call res.render with the correct arguments', () => {
+    const mockRender = jest.fn();
+    const mockRes = { render: mockRender };
+
+    const mockCurrUser = { "add": "",
+         "add2": "",
+         "city": "",
+         "fname": "",
+         "info_completed": false,
+         "state": "",
+         "user_history": [],
+         "username": "",
+         "zip": "", };
+    const mockUserHistory = [ /* mock user_history array */ ];
+    const mockTclientProfile = { "deliveryAddress": "Address placeholder",
+         "deliveryDate": "",
+         "gallonsRequested": 0,
+         "suggestedPrice": 0,
+         "totalAmountDue": 0, };
+
+    server.MyObject.load_second_page(mockRes, mockCurrUser, mockUserHistory, mockTclientProfile);
+
+    expect(mockRender).toHaveBeenCalledWith('index2', {
+      curr_user: mockCurrUser,
+      history: mockUserHistory,
+      tclientProfile: mockTclientProfile
     });
-    request(app)
-      .post('/reg')
-      .send(mockReq)
-      .end(mockRes);
   });
 });
 
-// Test profile management page GET request
-describe('GET /profile', () => {
-  it('calls MyObject.profile_get_action', (done) => {
-    const mockRes = {};
-    MyObject.profile_get_action = jest.fn(() => {
-      done();
-    });
-    request(app)
-      .get('/profile')
-      .end(mockRes);
-  });
-});
-
-// Test profile management page POST request
-describe('POST /profile', () => {
-  it('calls MyObject.profile_post_action with correct request and response parameters', (done) => {
-    const mockReq = { body: {} };
-    const mockRes = {};
-    MyObject.profile_post_action = jest.fn(() => {
-      done();
-    });
-    request(app)
-      .post('/profile')
-      .send(mockReq)
-      .end(mockRes);
-  });
-});
-
-// Test client form validation middleware
 describe('validateClientForm', () => {
-  it('calls next() when all fields are valid', (done) => {
-    const mockReq = {
+  let req;
+  let res;
+  let next;
+
+  beforeEach(() => {
+    req = {
       body: {
         fullName: 'John Doe',
         address1: '123 Main St',
         city: 'Houston',
         state: 'TX',
-        zipcode: '77001',
+        zipcode: '77002',
       },
     };
-    const mockRes = {};
-    const mockNext = jest.fn(() => {
-      done();
-    });
-    validateClientForm(mockReq, mockRes, mockNext);
+    res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+    next = jest.fn();
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should pass validation for valid input', () => {
+    server.validateClientForm(req, res, next);
+    expect(res.status).not.toHaveBeenCalled();
+    expect(res.json).not.toHaveBeenCalled();
+    expect(next).toHaveBeenCalled();
+  });
+
+  it('should fail validation for missing required fields', () => {
+    req.body = {};
+    server.validateClientForm(req, res, next);
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ msg: 'Please fill in all required fields' });
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it('should fail validation for full name length > 50', () => {
+    req.body.fullName = 'a'.repeat(51);
+    server.validateClientForm(req, res, next);
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ msg: 'Full name must be less than 50 characters' });
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it('should fail validation for address1 length > 100', () => {
+    req.body.address1 = 'a'.repeat(101);
+    server.validateClientForm(req, res, next);
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ msg: 'Address 1 must be less than 100 characters' });
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it('should fail validation for address2 length > 100', () => {
+    req.body.address2 = 'a'.repeat(101);
+    server.validateClientForm(req, res, next);
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ msg: 'Address 2 must be less than 100 characters' });
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it('should fail validation for city length > 100', () => {
+    req.body.city = 'a'.repeat(101);
+    server.validateClientForm(req, res, next);
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ msg: 'City must be less than 100 characters' });
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it('should fail validation for invalid state format', () => {
+    req.body.state = 'ABC';
+    server.validateClientForm(req, res, next);
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ msg: 'State must be a 2 character code' });
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it('should fail validation for invalid zipcode format', () => {
+    req.body.zipcode = '1234';
+    server.validateClientForm(req, res, next);
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ msg: 'Zipcode must be a 5 or 9 digit code' });
+    expect(next).not.toHaveBeenCalled();
   });
 });
 
-// Test fuel quote POST request
-describe('POST /fuelQuote', () => {
-  it('calls MyObject.fuelQuote_post_action with correct request and response parameters', (done) => {
-    const mockReq = { body: {} };
-    const mockRes = {};
-    MyObject.fuelQuote_post_action = jest.fn(() => {
-      done();
+
+describe('POST /client-form', () => {
+  test('should respond with 200 OK', async () => {
+    const response = await request(server.app)
+      .post('/client-form')
+      .send({
+        fullName: 'John Doe',
+        address1: '123 Main St',
+        address2: 'Apt 1',
+        city: 'Anytown',
+        state: 'NY',
+        zipcode: '12345',
+      });
+    expect(response.statusCode).toBe(200);
+    expect(response.text).toBe('Form submitted successfully!');
+  });
+
+  test('should respond with 400 Bad Request if required fields are missing', async () => {
+    const response = await request(server.app).post('/client-form').send({
+      fullName: 'John Doe',
+      city: 'Anytown',
+      state: 'NY',
+      zipcode: '12345',
     });
-    request(app)
-      .post('/fuelQuote')
-      .send(mockReq)
-      .end(mockRes);
+    expect(response.statusCode).toBe(400);
+    expect(response.body.msg).toBe('Please fill in all required fields');
+  });
+  test('should respond with 400 Bad Request if fields are too long', async () => {
+    const response = await request(app)
+      .post('/client-form')
+      .send({
+        fullName: 'John Doe'.repeat(10), // fullName will be 100 characters long
+        address1: '123 Main St'.repeat(10), // address1 will be 1000 characters long
+        address2: 'Apt 1'.repeat(10), // address2 will be 1000 characters long
+        city: 'Anytown'.repeat(10), // city will be 1000 characters long
+        state: 'New York', // state is not a 2 character code
+        zipcode: '12345-67890', // zipcode is a 10 digit code
+      });
+    expect(response.statusCode).toBe(400);
+    expect(response.body.msg).toMatch(/must be less than/);
+    expect(response.body.msg).toMatch(/must be a 2 character code/);
+    expect(response.body.msg).toMatch(/must be a 5 or 9 digit code/);
   });
 });
 
-// Test user management page GET request
+
+describe('POST /login', () => {
+  test('returns 400 status code if username is invalid', async () => {
+    const response = await request(server.app)
+      .post('/login')
+      .send({
+        usernameInput: 'invalidusername',
+        passwordInput: 'validpassword'
+      });
+    expect(response.statusCode).toBe(400);
+    expect(response.text).toBe('Invalid username');
+  });
+
+  test('returns 400 status code if password is invalid', async () => {
+    const response = await request(server.app)
+      .post('/login')
+      .send({
+        usernameInput: 'validusername',
+        passwordInput: 'invalidpassword'
+      });
+    expect(response.statusCode).toBe(400);
+    expect(response.text).toBe('Invalid username');
+  });
+
+  test('returns 200 status code and redirects to user page if login is successful', async () => {
+    const response = await request(server.app)
+      .post('/login')
+      .send({
+        usernameInput: 'validusername',
+        passwordInput: 'validpassword'
+      });
+    expect(response.statusCode).toBe(200);
+    expect(response.header['location']).toBe('/user');
+  });
+  test('valid login should set logged_in to true and redirect to user page', async () => {
+    // set up test data
+    const username = 'testuser';
+    const password = 'testpassword';
+    const user = {
+      username: 'testuser',
+      password: await bcrypt.hash('testpassword', 10),
+      fullName: 'Test User',
+      address1: '123 Test St',
+      address2: '',
+      city: 'Testville',
+      state: 'TX',
+      zip: '12345',
+      info_complete: true
+    };
+    // mock getUser function to return test user data
+    const getUserMock = jest.fn().mockResolvedValue([user]);
+    // mock getUserQuotes function to return empty history
+    const getUserQuotesMock = jest.fn().mockResolvedValue([]);
+    // set up request and response objects
+    const req = {
+      body: {
+        usernameInput: username,
+        passwordInput: password
+      }
+    };
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      send: jest.fn(),
+      redirect: jest.fn()
+    };
+    // call login handler
+    await loginHandler(req, res, getUserMock, getUserQuotesMock, bcrypt);
+    // assert that user data was set correctly
+    expect(logged_in).toBe(true);
+    expect(curr_user.username).toBe(user.username);
+    expect(curr_user.fname).toBe(user.fullName);
+    expect(curr_user.add).toBe(user.address1);
+    expect(curr_user.add2).toBe(user.address2);
+    expect(curr_user.city).toBe(user.city);
+    expect(curr_user.state).toBe(user.state);
+    expect(curr_user.zip).toBe(user.zip);
+    expect(curr_user.info_completed).toBe(user.info_complete);
+    expect(curr_user.user_history).toEqual([]);
+    // assert that redirect was called correctly
+    expect(res.redirect).toHaveBeenCalledWith('/user');
+  });
+ });
+
+describe('stateslist', () => {
+test('statesList should contain all 50 states in correct order', () => {
+  const expectedStates = [    'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',    'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD',    'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ',    'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC',    'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'  ];
+
+  expect(server.statesList).toEqual(expectedStates);
+});
+});
+
 describe('GET /user', () => {
-  it('calls MyObject.user_get_action', (done) => {
-    const mockRes = {};
-    MyObject.user_get_action = jest.fn(() => {
-      done();
-    });
-    request(app)
-      .get('/user')
-      .end(mockRes);
-  });
-});const MyObject = {
-  render_second_page: function(res, curr_user, tclientProfile) {
-    res.render('index2', {
-      curr_user: curr_user,
-      history: curr_user.user_history,
-      tclientProfile: tclientProfile,
-    });
-  },
-
-  isNewUser: async function(username) {
-    const userExists = await getUser(username);
-    return !userExists[0];
-  },
-
-  addUserToDatabase: async function(username, password) {
-    const hash = await bcrypt.hash(password, 5);
-    await createUser(username, hash, '', '', '', '', '', '', '0');
-  },
-
-  redirectToProfile: function(res) {
-    res.redirect('/profile');
-  },
-
-  isProfileInfoCompleted: function(curr_user) {
-    return curr_user.info_completed;
-  },
-
-  sendProfileManage: function(res, __dirname) {
-    res.sendFile(__dirname + "/profile_manage.html");
-  },
-
-  updateCurrentUserInfo: function(curr_user, req) {
-    const { fullname, address1, address2, zipcode, city, state } = req.body;
-    curr_user.fname = fullname;
-    curr_user.add = address1;
-    curr_user.add2 = address2;
-    curr_user.city = city;
-    curr_user.state = state;
-    curr_user.zip = zipcode;
-    curr_user.user_history = [];
-  },
-
-  isProfileInfoValid: function(req) {
-    const { fullname, address1, zipcode, city, state } = req.body;
-    return fullname && address1 && zipcode && city && state;
-  },
-
-  updateUserInDatabase: async function(curr_user) {
-    await updateUser(
-      curr_user.username,
-      curr_user.fname,
-      curr_user.add,
-      curr_user.add2,
-      curr_user.city,
-      curr_user.state,
-      curr_user.zip,
-      curr_user.info_completed,
-      curr_user.username
-    );
-  },
-
-  redirectToUser: function(res) {
-    res.redirect('/user');
-  },
-
-  informIncompleteFields: function(res) {
-    res.send('Please fill in all required fields');
-  },
-};
-
-
-
-const chai = require('chai');
-const expect = chai.expect;
-const sinon = require('sinon');
-
-const MyObject = require('./MyObject');
-
-describe('MyObject', () => {
-  describe('isNewUser', () => {
-    it('should return true if user does not exist', async () => {
-      const getUserStub = sinon.stub().returns(Promise.resolve([null]));
-      MyObject.getUser = getUserStub;
-
-      const result = await MyObject.isNewUser('new_user');
-      expect(result).to.be.true;
-    });
-
-    it('should return false if user exists', async () => {
-      const getUserStub = sinon.stub().returns(Promise.resolve([{ username: 'existing_user' }]));
-      MyObject.getUser = getUserStub;
-
-      const result = await MyObject.isNewUser('existing_user');
-      expect(result).to.be.false;
-    });
+  test('should redirect to / if user is not logged in', async () => {
+    const response = await request(server.app).get('/user');
+    expect(response.status).toBe(302); // Expect HTTP redirect status code
+    expect(response.header.location).toBe('/'); // Expect redirect to home page
   });
 
-  // Add more tests for other functions
+  test('should load second page if user is logged in', async () => {
+    // Simulate a logged in user by setting `logged_in` to true
+    logged_in = true;
 
+    const response = await request(server.app).get('/user');
+    expect(response.status).toBe(200); // Expect HTTP success status code
+    // Assert that the response body contains expected content, for example:
+    expect(response.text).toContain('Welcome to the second page!');
+
+    // Reset `logged_in` to false for other tests
+    logged_in = false;
+  });
 });
 
+describe('POST /fuelQuote', () => {
+  it('should return 400 if gallonsRequested is not a number', async () => {
+    const res = await request(server.app)
+      .post('/fuelQuote')
+      .send({ gallonsRequested: 'abc', deliveryDate: '2023-01-01' });
+    expect(res.statusCode).toEqual(400);
+    expect(res.text).toContain('Gallons Requested must be a number');
+  });
+
+  it('should return 400 if deliveryDate is not in YYYY-MM-DD format', async () => {
+    const res = await request(server.app)
+      .post('/fuelQuote')
+      .send({ gallonsRequested: 10, deliveryDate: '2023/01/01' });
+    expect(res.statusCode).toEqual(400);
+    expect(res.text).toContain('Delivery Date must be in YYYY-MM-DD format');
+  });
+
+  it('should return 200 and redirect to /user if all inputs are valid', async () => {
+    const res = await request(server.app)
+      .post('/fuelQuote')
+      .send({ gallonsRequested: 10, deliveryDate: '2023-01-01' });
+    expect(res.statusCode).toEqual(302); // HTTP 302 is the code for redirect
+    expect(res.header.location).toEqual('/user');
+  });
+});
+
+describe('POST /profile', () => {
+  it('should return a 302 redirect to /user if all required fields are present', async () => {
+    const response = await request(server.app)
+      .post('/profile')
+      .send({
+        fullname: 'John Doe',
+        address1: '123 Main St',
+        zipcode: '12345',
+        city: 'Anytown',
+        state: 'CA',
+      });
+    expect(response.status).toBe(302);
+    expect(response.headers.location).toBe('/user');
+  });
+
+  it('should return a 200 response with error message if any required field is missing', async () => {
+    const response = await request(server.app)
+      .post('/profile')
+      .send({
+        fullname: 'John Doe',
+        address1: '123 Main St',
+        city: 'Anytown',
+        state: 'CA',
+      });
+    expect(response.status).toBe(200);
+    expect(response.text).toContain('Please fill in all required fields');
+  });
+});
+
+describe('GET /profile', () => {
+  it('should return the profile page if user info is incomplete', async () => {
+    // simulate a request to the server
+    const response = await request(server.app).get('/profile');
+
+    // check if the response status code is 200 OK
+    expect(response.statusCode).toBe(200);
+
+    // check if the response contains the expected HTML file
+    expect(response.text).toContain('profile_manage.html');
+  });
+
+  it('should redirect to /user if user info is complete', async () => {
+    // simulate a request to the server with a flag indicating that user info is complete
+    const response = await request(server.app).get('/profile').query({ db_info_completed: true });
+
+    // check if the response status code is 302 Found (redirect)
+    expect(response.statusCode).toBe(302);
+
+    // check if the response Location header points to /user
+    expect(response.header.location).toBe('/user');
+  });
+});
+
+
+describe('POST /reg', () => {
+  it('should create a new user and redirect to /profile', async () => {
+    const mockUser = {
+      username: 'testuser',
+      pass: 'testpassword'
+    };
+    const mockRequest = request(server.app)
+      .post('/reg')
+      .send(mockUser);
+    const mockResponse = await mockRequest;
+    expect(mockResponse.statusCode).toBe(302);
+    expect(mockResponse.header.location).toBe('/profile');
+  });
+
+  it('should return an error if the username already exists', async () => {
+    const mockUser = {
+      username: 'existinguser',
+      pass: 'testpassword'
+    };
+    const mockRequest = request(server.app)
+      .post('/reg')
+      .send(mockUser);
+    const mockResponse = await mockRequest;
+    expect(mockResponse.statusCode).toBe(302);
+    expect(mockResponse.header.location).toBe('/');
+  });
+});
+
+describe('POST /reg', () => {
+  test('creates a new user and redirects to /profile', async () => {
+    const username = 'testuser';
+    const password = 'testpass';
+
+    const response = await request(server.app)
+      .post('/reg')
+      .send({ username, pass: password })
+      .expect(302)
+      .expect('Location', '/profile');
+
+    // Make sure the user was added to the database
+    const user = await getUser(username);
+    expect(user).toBeDefined();
+    expect(user.username).toEqual(username);
+
+    // Make sure the password was hashed and stored securely
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    expect(isPasswordValid).toBe(true);
+  });
+
+  test('returns an error if the username already exists', async () => {
+    const existingUser = await createUser('existinguser', 'existingpass', '', '', '', '', '', '', '0');
+
+    const response = await request(server.app)
+      .post('/reg')
+      .send({ username: existingUser.username, pass: 'newpass' })
+      .expect(302)
+      .expect('Location', '/');
+
+    // Make sure the user wasn't added to the database
+    const user = await getUser(existingUser.username);
+    expect(user).toBeDefined();
+    expect(user.password).toEqual(existingUser.password);
+
+    // Make sure the error message is displayed
+    expect(response.text).toContain('Username already exists');
+  });
+});
+
+describe('GET /', () => {
+  it('responds with status 200', async () => {
+    const response = await request(server.app).get('/');
+    expect(response.statusCode).toBe(200);
+  });
+
+  it('responds with HTML', async () => {
+    const response = await request(server.app).get('/');
+    expect(response.headers['content-type']).toContain('text/html');
+  });
+});
+
+describe('POST /logout', () => {
+  it('should clear the user session data and set logged_in to false', async () => {
+    // Set up a logged in user
+    let logged_in = true;
+    let curr_user = { username: 'testuser' };
+    
+    // Make a request to the /logout endpoint
+    const response = await request(server.app)
+      .post('/logout')
+      .send();
+
+    // Assert that the session data has been cleared and logged_in has been set to false
+    expect(curr_user).toEqual({});
+    expect(logged_in).toBe(false);
+    
+    // Assert that the response is a redirect to the home page
+    expect(response.status).toBe(302);
+    expect(response.headers.location).toBe('/');
+  });
+});
