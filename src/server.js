@@ -468,7 +468,6 @@ app.post('/login', async (req, res) => {
 app.get('/client/:id',(req, res) => {
   const clientId = req.params.id;
   //link to database to look up client info
-
   const tempClientData = {
     name: db_username,
     address: db_add1,
@@ -514,8 +513,6 @@ module.exports = {
   statesList
 
 };
-
-
 
 
 

@@ -212,8 +212,9 @@ app.get('/profile', (req, res) => {
 
     //console.log(curr_user);
     await updateUser(curr_user.username, curr_user.fname, curr_user.add, curr_user.add2, curr_user.city, curr_user.state, curr_user.zip, curr_user.info_completed, curr_user.username);
-    
+    curr_user.user_history = getUserQuotes(curr_user.history);
     logged_in = true;
+    curr_user.user_history= await getUserQuotes(curr_user.username);
     res.redirect('/user');
   } else {
     // Inform user that all required fields are not present
@@ -304,13 +305,14 @@ try {
     res.status(500).send('Server error');
   }
   // Add the new quote to the user's history
-  curr_user.user_history.push({
-    gallons: gallonsRequested,
-    address: deliveryAddress,
-    date: deliveryDate,
-    suggested_price: suggestedPrice,
-    total_amount_due: totalAmountDue
- });
+//   curr_user.user_history.push({
+//     gallons: gallonsRequested,
+//     address: deliveryAddress,
+//     date: deliveryDate,
+//     suggested_price: suggestedPrice,
+//     total_amount_due: totalAmountDue
+//  });
+  curr_user.user_history= await getUserQuotes(curr_user.username);
  curr_user.newClient = false;
 });
 
@@ -320,6 +322,7 @@ try {
 // USERS SHOULD NOT HAVE DIRECT ACCESS TO SECOND PAGE
 app.get('/user', (req, res) => {
     if (logged_in) {
+      
         MyObject.load_second_page(res);
     } else {
         res.redirect('/');
