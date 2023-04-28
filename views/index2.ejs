@@ -230,7 +230,7 @@
              <form action="/fuelQuote" method="POST" class="form-control form-control-md">
                 
                     <label for="gallonsRequested">Gallons Requested:</label>
-                    <input type="number" id="gallonsRequested" name="gallonsRequested" class="form-control" value="<%= tclientProfile.gallonsRequested %>" required>
+                    <input type="number" id="gallonsRequested" name="gallonsRequested" class="form-control" value="<%= tclientProfile.gallonsRequested %>" min="0" required>
                 
                 
                 
